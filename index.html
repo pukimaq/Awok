@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Verify UID - FF Beta</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #121212;
+      color: #fff;
+      text-align: center;
+      padding: 50px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+    input {
+      width: 250px;
+    }
+    button {
+      background-color: #00ffcc;
+      color: #000;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Verifikasi UID FF</h1>
+  <p>Masukkan ID Free Fire kamu untuk mendapatkan akses ke versi Beta.</p>
+  <input type="text" id="uid" placeholder="Masukkan UID kamu">
+  <br>
+  <button onclick="getKey()">Dapatkan Akses</button>
+  <div class="result" id="result"></div>
+
+  <script>
+    function getKey() {
+      const uid = document.getElementById('uid').value.trim();
+      const result = document.getElementById('result');
+
+      if (!uid || uid.length < 5) {
+        result.innerText = "UID tidak valid.";
+        result.style.color = "red";
+        return;
+      }
+
+      const now = Date.now();
+      const expiredAt = now + (2 * 60 * 60 * 1000); // 2 jam dalam ms
+      const payload = {
+        uid: uid,
+        created: now,
+        expired: expiredAt
+      };
+
+      const encoded = btoa(JSON.stringify(payload));
+
+      result.innerHTML = `Key kamu (berlaku 2 jam): <br><code>${encoded}</code>`;
+      result.style.color = "lime";
+    }
+
+    // Fungsi validasi (bisa digunakan di halaman lain)
+    function validateKey(encoded) {
+      try {
+        const decoded = JSON.parse(atob(encoded));
+        const now = Date.now();
+
+        if (now > decoded.expired) {
+          return { valid: false, message: "Key sudah expired." };
+        }
+
+        return { valid: true, uid: decoded.uid };
+      } catch (e) {
+        return { valid: false, message: "Key tidak valid." };
+      }
+    }
+  </script>
+</body>
+</html>
